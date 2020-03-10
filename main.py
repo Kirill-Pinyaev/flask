@@ -1,11 +1,11 @@
 import datetime
 from os import abort
 
-from flask import Flask, render_template, request, make_response, session
+from flask import Flask, render_template, request, make_response, session, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.utils import redirect
 
-from data import db_session
+from data import db_session, news_api
 from data.LoginForm import LoginForm
 from data.NewsForm import NewsForm
 from data.RegisterForm import RegisterForm
@@ -21,6 +21,7 @@ login_manager.init_app(app)
 
 def main():
     db_session.global_init("db/blogs.sqlite")
+    app.register_blueprint(news_api.blueprint)
     app.run()
 
 
@@ -173,6 +174,11 @@ def news_delete(id):
     else:
         abort(404)
     return redirect('/')
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found'}), 404)
 
 
 if __name__ == '__main__':
