@@ -9,6 +9,8 @@ from data import db_session, news_api, jobs_api
 from data.LoginForm import LoginForm
 from data.NewsForm import NewsForm
 from data.RegisterForm import RegisterForm
+from data.add_jobs import AddJobForm
+from data.jobs import Jobs
 from data.news import News
 from data.users import User
 
@@ -175,6 +177,24 @@ def news_delete(id):
     else:
         abort(404)
     return redirect('/')
+
+
+@app.route('/addjob', methods=["GET", "POST"])
+def addjob():
+    add_form = AddJobForm()
+    if add_form.validate_on_submit():
+        session = db_session.create_session()
+        job = Jobs(
+            job=add_form.job.data,
+            team_leader=add_form.team_leader.data,
+            work_size=add_form.work_size.data,
+            collaborators=add_form.collaborators.data,
+            is_finished=add_form.is_finished.data
+        )
+        session.add(job)
+        session.commit()
+        return redirect('/')
+    return render_template(jsonify({'error': 'Not found'}), 404)
 
 
 @app.errorhandler(404)
