@@ -73,6 +73,5 @@ def change_news(news_id):
         return jsonify({'error': 'Not found'})
     for keys in request.json:
         news[keys] = request.json[keys]
-
     session.commit()
     return jsonify({'success': 'OK'})
